@@ -10,7 +10,13 @@ CHAR_VERIFIED_REG_EX_LIST = ["^(\S+)\sbegins to cast a spell.$",
                              "^(\S+)\slooks\s.+.$",
                              "^(\S+)\sbegins to regenerate.$",
                              "^(\S+)'s\seyes gleam with heroic resolution.$",
-                             "^(\S+)\sfeels much better."
+                             "^(\S+)\sfeels much better.",
+                             "^(\S+)\shas been struck by lightning.",
+                             "^(\S+)\screates a shimmering dimensional portal.",
+                             "^(\S+)'s\seye gleams with the power of Aegolism.",
+                             "^(\S+)\sfeels the favor of the gods upon them.",
+                             "^(\S+)\ssteps into the shadows and disappears.",
+                             "^(\S+)\sfades away."
                             ]
                             
 MOB_VERIFIED_REG_EX_LIST = ["^.+\s(backstabs|bashes|bites|crushes|hits|kicks|pierces|punches|slashes)\s(\S+)\sfor\s[0-9]+\spoint[s]* of damage.$"
@@ -21,11 +27,18 @@ dkp_lines = list()
 
 file_name = raw_input("Enter log file name: ")
 
-raid_start = raw_input("Enter raid start time (YYYY-MM-DD HH:MM:SS format): ")
-raid_start_time = datetime.strptime(raid_start, '%Y-%m-%d %H:%M:%S')
+run_entire_file = raw_input("Do you want to run attendance for the entire file? (Y/N) ")
+if run_entire_file == 'Y' or run_entire_file == 'y':
+    is_entire_file = True
+else:
+    is_entire_file = False
 
-raid_end = raw_input("Enter raid end time (YYYY-MM-DD HH:MM:SS format): ")
-raid_end_time = datetime.strptime(raid_end, '%Y-%m-%d %H:%M:%S')
+if not is_entire_file:    
+    raid_start = raw_input("Enter raid start time (YYYY-MM-DD HH:MM:SS format): ")
+    raid_start_time = datetime.strptime(raid_start, '%Y-%m-%d %H:%M:%S')
+
+    raid_end = raw_input("Enter raid end time (YYYY-MM-DD HH:MM:SS format): ")
+    raid_end_time = datetime.strptime(raid_end, '%Y-%m-%d %H:%M:%S')
 
 file = open(file_name)
 for line in file:
@@ -34,14 +47,14 @@ for line in file:
         date_string = line[1:25]
         date_object = datetime.strptime(date_string, '%a %b %d %H:%M:%S %Y')
         
-        # Check if timestamp is after raid_start_time and before raid_end_time
-        if raid_start_time < date_object and date_object < raid_end_time:
+        # Check if timestamp is after raid_start_time and before raid_end_time or if running entire file
+        if is_entire_file or (raid_start_time < date_object and date_object < raid_end_time):
         
             # Get data past timestamp
             log_data = line[27:]
         
-            # If DKP or 5-250 in line, add to DKP list
-            if re.search('.*(DKP|5-250).*', log_data, re.IGNORECASE):
+            # If DKP or 5-250 or 5-100 in line, add to DKP list
+            if re.search('.*(DKP|5-250|5 - 250|5-100|5 - 100).*', log_data, re.IGNORECASE):
                 dkp_lines.append(log_data)
             else:
             
