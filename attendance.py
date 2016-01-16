@@ -16,14 +16,23 @@ CHAR_VERIFIED_REG_EX_LIST = ["^(\S+)\sbegins to cast a spell.$",
                              "^(\S+)'s\seye gleams with the power of Aegolism.",
                              "^(\S+)\sfeels the favor of the gods upon them.",
                              "^(\S+)\ssteps into the shadows and disappears.",
-                             "^(\S+)\sfades away."
+                             "^(\S+)\sfades away.",
+                             "^(\S+)\sis surrounded by a summer haze.",
+                             "^(\S+)'s\simage shimmers.",
+                             "^(\S+)'s\swounds fade away.",
+                             "^(\S+)'s\sskin sears.",
+                             "^(\S+)'s\ssong ends abruptly."
                             ]
                             
 MOB_VERIFIED_REG_EX_LIST = ["^.+\s(backstabs|bashes|bites|crushes|hits|kicks|pierces|punches|slashes)\s(\S+)\sfor\s[0-9]+\spoint[s]* of damage.$"
                   ]              
+
+PET_VERIFIED_REG_EX_LIST = ["^(\S+)\ssays 'Sorry, Master..calming down.'$",
+                            "^(\S+)\ssays 'At your service Master.'$"]
                   
 verified_hits = dict()
 dkp_lines = list()
+pet_list = list()
 
 file_name = raw_input("Enter log file name: ")
 
@@ -78,14 +87,31 @@ for line in file:
                         else:
                             # If name not in list, add timestamp to both first and last entries
                             verified_hits[m.group(2)] = [date_object, date_object]
-                        
+                 
+                for regex in PET_VERIFIED_REG_EX_LIST:
+                    m = re.search(regex, log_data)
+                    if m:
+                        # If pet name not in list, add it
+                        if m.group(1) not in pet_list:
+                            pet_list.append(m.group(1))
+                
         elif date_object > raid_end_time:
             # Past raid end time, break out of loop
             break
 
+# Remove pets from verified hits
+for pet in pet_list:
+    if pet in verified_hits:
+        del verified_hits[pet]
+            
 out_file = open("attendance.txt", "w")            
 for k, v in sorted(verified_hits.items()):
-    out_file.write(k + ": " + str(v[0]) + ", " + str(v[1]) + "\n")
+    out_file.write(k + ", " + str(v[0]) + ", " + str(v[1]) + "\n")
 
 for line in dkp_lines:
     out_file.write(line)
+
+if len(pet_list) > 0:
+    out_file.write("The following 'pets' were removed - please verify:\n")
+    for pet in pet_list:
+        out_file.write(pet + "\n")
