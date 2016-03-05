@@ -21,7 +21,7 @@ PET_VERIFIED_REG_EX_LIST = ["^(\S+)\ssays 'Sorry, Master..calming down.'$",
                             
 GUILD_VERIFIED_REG_EX_LIST = ["([a-z|A-Z]{3,})\stells the guild,\s.+$"]                            
 
-DKP_REG_EX_LIST = [".*(SEND BIDS|DKP|5-250|5 - 250|5-100|5 - 100).*"]
+DKP_REG_EX_LIST = [".*(SEND BIDS|DKP|5-350|5 - 350|5-100|5 - 100).*"]
 
 # Constants
 GUILD_STATUS = 0
