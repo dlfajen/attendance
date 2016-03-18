@@ -8,7 +8,10 @@ CHAR_VERIFIED_REG_EX_LIST = ["^([a-z|A-Z]{3,})\s(backstabs|bashes|bites|crushes|
                              "^([a-z|A-Z]{3,})\s(blinks|combusts|dies|fades|moans|pales|panics|rages|shrinks|staggers|stumbles|weakens|winces|yawns).$",
                              "^([a-z|A-Z]{3,})\sgoes into a berserker frenzy!",
                              "^([a-z|A-Z]{3,})\sis no longer berserk.",
-                             "^([a-z|A-Z]{3,})\sis\s(adorned|bathed|blasted|blinded|bound|chilled|cloaked|coated|completely|consumed|covered|encased|engulfed|entombed|enveloped|immolated|lacerated|mauled|pelted|protected|resistant|sheathed|slammed|smashed|struck|stunned|surrounded)\s.+.$"
+                             "^([a-z|A-Z]{3,})\sis\s(adorned|bathed|blasted|blinded|bound|chilled|cloaked|coated|completely|consumed|covered|encased|engulfed|entombed|enveloped|immolated|lacerated|mauled|pelted|protected|resistant|sheathed|slammed|smashed|struck|stunned|surrounded)\s.+.$",
+                             "^Glug, glug, glug...\s\s([a-z|A-Z]{3,})\stakes a drink from\s.+.$",
+                             "^Chomp, chomp, chomp...\s\s([a-z|A-Z]{3,})\stakes a bite from\s.+.$",
+                             "^A missed note brings\s([a-z|A-Z]{3,})'s\ssong to a close!"
                             ]
                             
 MOB_VERIFIED_REG_EX_LIST = ["^.+\s(backstabs|bashes|bites|crushes|hits|kicks|pierces|punches|slashes)\s([a-z|A-Z]{3,})\sfor\s[0-9]+\spoint[s]* of damage.$"
@@ -128,8 +131,10 @@ for pet in pet_list:
 for guild_member in guild_list:
     if guild_member in verified_hits:
         verified_hits[guild_member][GUILD_STATUS] = "Guild Member"
-            
-out_file = open("attendance.txt", "w")            
+
+file_name_array = file_name.split('.')        
+out_file = open(file_name_array[0] + "_attendance.txt", "w")
+out_file.write("Name, Guild Status, First Activity, Second Activity, Total Hours, Largest Inactive Period in Minutes\n")
 for k, v in sorted(verified_hits.items()):
     out_file.write(k + ", " + str(v[GUILD_STATUS]) + ", " + str(v[FIRST_HIT]) + ", " + str(v[SECOND_HIT]) + ", " + str(v[SECOND_HIT] - v[FIRST_HIT]) + ", " + str(v[INACTIVITY]/60) + "\n")
 
