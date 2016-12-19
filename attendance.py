@@ -22,7 +22,7 @@ REG_EX_DICT = {"^([a-z|A-Z]{3,})\s(backstabs|bashes|bites|crushes|hits|kicks|pie
                "^(\S+)\ssays 'Guarding with my life..oh splendid one.'$":'PET',
                "^(\S+)\ssays 'No longer taunting attackers, Master.'$":'PET',
                "([a-z|A-Z]{3,})\stells the guild,\s.+$":'GUILD',
-               ".*(DKP|DPK|dkp|dpk|BIDS|bids|5-350|5 - 350|5-100|5 - 100).*":'DKP'}
+               ".*(DKP|DPK|dkp|dpk|BIDS|bids|5-100|5 - 100|5-350|5 - 350|5-500|5 - 500).*":'DKP'}
              
 # Constants
 GUILD_STATUS = 0
