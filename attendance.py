@@ -8,15 +8,17 @@ WHO_LIST_END_REG_EX = "^There\s.*\.$"
 REG_EX_DICT = {"^([a-z|A-Z]{3,})\s(backstabs|bashes|bites|crushes|hits|kicks|pierces|punches|slashes)\s.+\sfor\s[0-9]+\spoint[s]* of damage.$":'CHAR',
                "^([a-z|A-Z]{3,})\ssays,\s.+$":'CHAR',
                "^([a-z|A-Z]{3,})'s\s(armor|blood|body|brain|ears|eyes|face|feet|fist|flesh|hair|hammer|hand|hands|head|image|mind|muscles|skin|song|veins|weapon|weapons|world|wounds)\s.+.$":'CHAR',
-               "^([a-z|A-Z]{3,})\s(becomes|begins|blinks|blisters|breathes|calls|calms|casts|chokes|clutches|convulses|creates|disappears|dissolves|doesn't|dons|doubles|exhales|fades|feels|flees|floats|gains|gasps|glances|goes|grins|grows|has|inhales|lets|lights|looks|opens|peers|pulses|rises|screams|sends|shrieks|shivers|shudders|sighs|simmers|singes|sings|slows|smiles|spews|spouts|staggers|stands|starts|steps|stops|strikes|summons|sweats|takes|turns|winces|writhes)\s.+.$":'CHAR',
+               "^([a-z|A-Z]{3,})\s(becomes|begins|blinks|blisters|breathes|calls|calms|casts|chokes|clutches|convulses|creates|disappears|dissolves|doesn't|dons|doubles|exhales|experiences|fades|feels|flees|floats|gains|gasps|glances|goes|grins|grows|has|inhales|lets|lights|looks|opens|peers|pulses|regains|rises|screams|sends|shrieks|shivers|shudders|sighs|simmers|singes|sings|slows|smiles|spews|spouts|staggers|stands|starts|steps|stops|strikes|summons|sweats|takes|turns|winces|writhes)\s.+.$":'CHAR',
                "^([a-z|A-Z]{3,})\s(blinks|combusts|dies|fades|moans|pales|panics|rages|shrinks|staggers|stumbles|weakens|winces|yawns).$":'CHAR',
                "^([a-z|A-Z]{3,})\sgoes into a berserker frenzy!":'CHAR',
                "^([a-z|A-Z]{3,})\sis no longer berserk.":'CHAR',
+               "^([a-z|A-Z]{3,})\sscores a critical hit!":'CHAR',
                "^([a-z|A-Z]{3,})\sis\s(adorned|bathed|blasted|blinded|bound|chilled|cloaked|coated|completely|consumed|covered|encased|engulfed|entombed|enveloped|immolated|lacerated|mauled|pelted|protected|resistant|sheathed|slammed|smashed|struck|stunned|surrounded)\s.+.$":'CHAR',
                "^Glug, glug, glug...\s\s([a-z|A-Z]{3,})\stakes a drink from\s.+.$":'CHAR',
                "^Chomp, chomp, chomp...\s\s([a-z|A-Z]{3,})\stakes a bite from\s.+.$":'CHAR',
                "^A missed note brings\s([a-z|A-Z]{3,})'s\ssong to a close!":'CHAR',
                "^.+\s(backstabs|bashes|bites|crushes|hits|kicks|pierces|punches|slashes)\s([a-z|A-Z]{3,})\sfor\s[0-9]+\spoint[s]* of damage.$":'MOB',
+               "^.+\s(engages)\s([a-z|A-Z]{3,})!$":'MOB',
                "^(\S+)\ssays 'Sorry, Master..calming down.'$":'PET',
                "^(\S+)\ssays 'At your service Master.'$":'PET',
                "^(\S+)\ssays 'Guarding with my life..oh splendid one.'$":'PET',
@@ -182,6 +184,18 @@ for line in dkp_lines:
     out_file.write(line)
 
 if len(pet_list) > 0:
-    out_file.write("The following 'pets' were removed - please verify:\n")
+    out_file.write("\nThe following 'pets' were removed - please verify:\n")
     for pet in pet_list:
         out_file.write(pet + "\n")
+
+out_file.write("\nEasy raid uploading JavaScript:\n")
+out_file.write("myArray = [")
+needs_comma = False
+for k, v in sorted(attendance_list.items()):
+    if needs_comma:
+        out_file.write(",")
+    needs_comma = True;
+    out_file.write("\"" + k + "\"")
+out_file.write("];for(var i = 0; i < document.getElementById('listLeft').options.length; i++){for(var j = 0; j < myArray.length; j++){if(document.getElementById('listLeft').options[i].innerHTML.indexOf(myArray[j]) > -1) {document.getElementById('listLeft').options[i].selected = true;break;} else {document.getElementById('listLeft').options[i].selected = false;}}}")    
+
+        
