@@ -1,4 +1,5 @@
 from datetime import datetime
+from collections import defaultdict
 import re
 
 WHO_LIST_REG_EX = "^.+\]\s([a-z|A-Z]{3,})\s.+<(.+)>"
@@ -39,6 +40,7 @@ dkp_lines = list()
 pet_list = list()
 guild_list = dict()
 guild_name = "Azure Guard"
+hourly_list = defaultdict(list)
 
 file_name = raw_input("Enter log file name: ")
 
@@ -58,7 +60,9 @@ if not is_entire_file:
 is_azure_guard = raw_input("Is your guild " + guild_name + "? (Y/N) ")
 if is_azure_guard == 'N' or is_azure_guard == 'n':
     guild_name = raw_input("Enter your guild name exactly how it appears without the <>: (i.e. Azure Guard) ")
-    
+
+is_hourly_raid = raw_input("Is this an hourly raid? (Y for hourly/N for boss kill) ")
+   
 def update_attendance( char_name, date_object, type ):
     "This function updates the attendance for the character"
     if char_name in attendance_list:
@@ -99,6 +103,30 @@ def update_attendance( char_name, date_object, type ):
             attendance_list[char_name] = ['Unknown', None, None, 0, date_object, date_object]
     return
 
+def round_time_to_nearest_hour( time_delta ):
+    "This function takes in a timedelta and returns it rounded to the nearest hour"
+    if time_delta:
+        hours = time_delta.seconds // 3600
+        minutes = time_delta.seconds % 3600 / 60.0
+        if minutes >= 30:
+            hours += 1
+        return hours
+    else:
+        return 0
+
+def print_js_snippet( time_bucket_type, list_of_names ):
+    out_file.write("\n----------------------------------------------------------------------------\n")
+    out_file.write("Use this snippet to upload the " + time_bucket_type + " attendees.\n\n")
+    out_file.write("myArray = [")
+    needs_comma = False
+    for name in list_of_names:
+        if needs_comma:
+            out_file.write(",")
+        needs_comma = True;
+        out_file.write("\"" + name + "\"")
+    out_file.write("];for(var i = 0; i < document.getElementById('listLeft').options.length; i++){for(var j = 0; j < myArray.length; j++){if(document.getElementById('listLeft').options[i].innerHTML.indexOf(myArray[j]) > -1) {document.getElementById('listLeft').options[i].selected = true;break;} else {document.getElementById('listLeft').options[i].selected = false;}}}")    
+    out_file.write("\n----------------------------------------------------------------------------\n")
+        
 is_in_who_list = False
     
 file = open(file_name)
@@ -178,7 +206,9 @@ file_name_array = file_name.split('.')
 out_file = open(file_name_array[0] + "_attendance.txt", "w")
 out_file.write("Name, Guild Name, First Activity, Last Activity, Total Hours, Largest Inactive Period in Minutes, First Who Entry, Last Who Entry\n")
 for k, v in sorted(attendance_list.items(), key = lambda item: (item[1][0],item[0])):
-    out_file.write(k + ", " + str(v[GUILD_STATUS]) + ", " + str(v[FIRST_HIT] if v[FIRST_HIT] else "") + ", " + str(v[LAST_HIT] if v[LAST_HIT] else "") + ", " + str(v[LAST_HIT] - v[FIRST_HIT] if (v[LAST_HIT] and v[FIRST_HIT]) else "") + ", " + str(v[INACTIVITY]/60 if v[INACTIVITY] else "") + ", " + str(v[FIRST_WHO] if v[FIRST_WHO] else "") + ", " + str(v[LAST_WHO] if v[LAST_WHO] else "") + "\n")
+    total_hours = v[LAST_HIT] - v[FIRST_HIT] if (v[LAST_HIT] and v[FIRST_HIT]) else ""
+    out_file.write(k + ", " + str(v[GUILD_STATUS]) + ", " + str(v[FIRST_HIT] if v[FIRST_HIT] else "") + ", " + str(v[LAST_HIT] if v[LAST_HIT] else "") + ", " + str(total_hours) + ", " + str(v[INACTIVITY]/60 if v[INACTIVITY] else "") + ", " + str(v[FIRST_WHO] if v[FIRST_WHO] else "") + ", " + str(v[LAST_WHO] if v[LAST_WHO] else "") + "\n")
+    hourly_list[round_time_to_nearest_hour(total_hours)].append(k)
     
 for line in dkp_lines:
     out_file.write(line)
@@ -188,14 +218,11 @@ if len(pet_list) > 0:
     for pet in pet_list:
         out_file.write(pet + "\n")
 
-out_file.write("\nEasy raid uploading JavaScript:\n")
-out_file.write("myArray = [")
-needs_comma = False
-for k, v in sorted(attendance_list.items()):
-    if needs_comma:
-        out_file.write(",")
-    needs_comma = True;
-    out_file.write("\"" + k + "\"")
-out_file.write("];for(var i = 0; i < document.getElementById('listLeft').options.length; i++){for(var j = 0; j < myArray.length; j++){if(document.getElementById('listLeft').options[i].innerHTML.indexOf(myArray[j]) > -1) {document.getElementById('listLeft').options[i].selected = true;break;} else {document.getElementById('listLeft').options[i].selected = false;}}}")    
-
-        
+out_file.write("\nEasy raid uploading JavaScript:")
+if is_hourly_raid == 'Y' or is_hourly_raid == 'y':
+    for k, v in hourly_list.items():
+        print_js_snippet(str(k) + " hour", v)
+else:
+    print_js_snippet("boss raid", list(sorted(attendance_list.keys())))       
+    
+out_file.write("\nDon't forget to add in the log taker's name!")    
