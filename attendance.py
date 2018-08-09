@@ -124,7 +124,7 @@ def print_js_snippet( time_bucket_type, list_of_names ):
             out_file.write(",")
         needs_comma = True;
         out_file.write("\"" + name + "\"")
-    out_file.write("];for(var i = 0; i < document.getElementById('listLeft').options.length; i++){for(var j = 0; j < myArray.length; j++){if(myArray[j].match(document.getElementById('listLeft').options[i].innerHTML.split(/\\b/)[0]) !== null) {document.getElementById('listLeft').options[i].selected = true;break;} else {document.getElementById('listLeft').options[i].selected = false;}}}")    
+    out_file.write("];for(var i = 0; i < document.getElementById('listLeft').options.length; i++){for(var j = 0; j < myArray.length; j++){if(myArray[j] === document.getElementById('listLeft').options[i].innerHTML.split(/\\b/)[0]) {document.getElementById('listLeft').options[i].selected = true;break;} else {document.getElementById('listLeft').options[i].selected = false;}}}")    
     out_file.write("\n----------------------------------------------------------------------------\n")
 
 is_in_who_list = False
